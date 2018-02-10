@@ -24,6 +24,9 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Base class that contains common implementation for all
  * visualizers.
@@ -31,6 +34,7 @@ import android.view.View;
  */
 
 abstract public class BaseVisualizer extends View {
+    public List<byte[]> bytesList = new ArrayList<>();
     protected byte[] bytes;
     protected Paint paint;
     protected Visualizer visualizer;
@@ -76,8 +80,8 @@ abstract public class BaseVisualizer extends View {
             @Override
             public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes,
                                               int samplingRate) {
-                BaseVisualizer.this.bytes = bytes;
-                invalidate();
+                bytesList.add(bytes.clone());
+                setBytes(bytes);
             }
 
             @Override
@@ -87,6 +91,15 @@ abstract public class BaseVisualizer extends View {
         }, Visualizer.getMaxCaptureRate() / 2, true, false);
 
         visualizer.setEnabled(true);
+    }
+
+    public void setPlaceholder(byte[] bytes) {
+        setBytes(bytes);
+    }
+
+    private void setBytes(byte[] bytes) {
+        BaseVisualizer.this.bytes = bytes;
+        invalidate();
     }
 
     public void release() {
